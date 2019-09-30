@@ -107,17 +107,64 @@ def performHistoEqualization( radius ):
 # currentImage.  Use backward projection.  This is called when the
 # mouse is moved with the right button held down.
 
-def scaleImage( factor ):
+def scaleImage(factor):
+    width  = currentImage.size[0]
+    height = currentImage.size[1]
 
-  width  = currentImage.size[0]
-  height = currentImage.size[1]
+    srcPixels = tempImage.load()
+    dstPixels = currentImage.load()
 
-  srcPixels = tempImage.load()
-  dstPixels = currentImage.load()
+    # determine the center of the image 
+    # allows picture to be scale from center rather than corner
+    center_w = float(width / 2.0)
+    center_h = float(height / 2.0)
+    
+    for h in range(height):
+        for w in range(width):
 
-  # YOUR CODE HERE
+            # find current pixel's distance from center
+            x = w - center_w
+            y = h - center_h
 
-  print ('scale image by %f' % factor)
+            # determine nearest pixels and weight for interpolation
+            floor_w = math.floor((x / factor) + center_w)
+            floor_h = math.floor((y / factor) + center_h)
+            weight_w = float((x / factor) + center_w) - floor_w
+            weight_h = float((y / factor) + center_h) - floor_h
+
+            # set to black as default (used when pixel is out of range)
+            new_y = 16
+            new_b = 128
+            new_r = 128
+
+            if floor_w + 1 < width and floor_h + 1 < height and floor_w > 0 and floor_h > 0:
+
+                # take the bilinear interpolation of the four pixels around the scaled coordinate
+                # for each value in YCbCr
+                # lerp(a, b, p) = ((1 - p) * a) + (p * b)
+                new_y = int(math.floor(lerp( 
+                lerp(srcPixels[floor_w, floor_h][0], srcPixels[floor_w + 1, floor_h][0], weight_w), 
+                lerp(srcPixels[floor_w, floor_h + 1][0], srcPixels[floor_w + 1, floor_h + 1][0], weight_w), 
+                weight_h)))
+
+                new_b = int(math.floor(lerp(
+                lerp(srcPixels[floor_w, floor_h][1], srcPixels[floor_w + 1, floor_h][1], weight_w), 
+                lerp(srcPixels[floor_w, floor_h + 1][1], srcPixels[floor_w + 1, floor_h + 1][1], weight_w), 
+                weight_h)))
+                
+                new_r = int(math.floor(lerp(
+                lerp(srcPixels[floor_w, floor_h][2], srcPixels[floor_w + 1, floor_h][2], weight_w), 
+                lerp(srcPixels[floor_w, floor_h + 1][2], srcPixels[floor_w + 1, floor_h + 1][2], weight_w), 
+                weight_h)))
+
+            dstPixels[w, h] = (new_y, new_b, new_r)
+    print ('scale image by %f' % factor)
+            
+            
+# helper function to linearly interpolate between two values
+# lerp(a, b, p) = ((1 - p) * a) + (p * b)
+def lerp( value_1, value_2, weight):
+    return ((1 - weight) * value_1) + (weight * value_2)
 
   
 
