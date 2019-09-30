@@ -105,14 +105,11 @@ def performHistoEqualization(radius):
 
             for r in range(1, radius + 1):
 
-                # current pixel
                 current = w + width*h
-                # up down left right indexes
                 up = (w) + width*(h + r)
                 down = (w) + width*(h - r)
                 left = (w - r) + width*(h)
                 right = (w + r) + width*(h)
-                # top right, bottom right, top left, bottom left indexes
                 top_right = (w + r) + width*(h + r)
                 bot_right = (w + r) + width*(h - r)
                 top_left = (w - r) + width*(h + r)
