@@ -1,7 +1,8 @@
 Image-Processing Assignment 1
 Quinn Pollock
 20018131
-15map1e
+15map13
+
 
 Jack Guinane
 20018078
