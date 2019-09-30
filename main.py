@@ -86,21 +86,55 @@ def applyBrightnessAndContrast(brightness, contrast):
 
 # Perform local histogram equalization on the current image using the given radius.
 
-def performHistoEqualization( radius ):
+def performHistoEqualization(radius):
 
-  pixels = currentImage.load()
-  width  = currentImage.size[0]
-  height = currentImage.size[1]
+    pixels = currentImage.load()
+    width = currentImage.size[0]
+    height = currentImage.size[1]
 
-  # YOUR CODE HERE
-  for i in range(height):
-    for i in range(width):
-      q
-#   for all pixels
-#   (area.max + area.min +1)/ number of pixels < centre pixel + area.min - 1
+    pixel_table = []
 
-  print ('perform local histogram equalization with radius %d' % radius)
+    for h in range(height):
+        for w in range(width):
+            pixel_table.append(pixels[w, h][0])
 
+    
+    for h in range(height):
+        for w in range(width):
+            neighbours = []
+
+            for r in range(1, radius + 1):
+
+                # current pixel
+                current = w + width*h
+                # up down left right indexes
+                up = (w) + width*(h + r)
+                down = (w) + width*(h - r)
+                left = (w - r) + width*(h)
+                right = (w + r) + width*(h)
+                # top right, bottom right, top left, bottom left indexes
+                top_right = (w + r) + width*(h + r)
+                bot_right = (w + r) + width*(h - r)
+                top_left = (w - r) + width*(h + r)
+                bot_left = (w - r) + width*(h - r)
+
+                possible_neighbours = [current, up,
+                                      down, left, right, top_right, bot_right, top_left, bot_left]
+
+                for p in possible_neighbours:
+                    if p >= 0 and p < len(pixel_table):
+                        neighbours.append(pixel_table[p])
+                    else:
+                        neighbours.append(0)
+
+            H = filter(lambda x: x <= pixel_table[current], neighbours)
+
+            S = int(round((float(256) / float(len(neighbours)) * len(H)) - 1))
+
+            pixels[w, h] = (S, (pixels[w, h])[1],
+                            (pixels[w, h])[2])
+
+    print 'perform local histogram equalization with radius %d' % radius
 
 
 # Scale the tempImage by the given factor and store it in
