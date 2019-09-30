@@ -1,4 +1,4 @@
-Image-Processing Assignment 1
+# Image-Processing Assignment 1
 Quinn Pollock
 20018131
 15map13
